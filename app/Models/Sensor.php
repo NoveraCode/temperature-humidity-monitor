@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Sensor extends Model
@@ -24,7 +25,7 @@ class Sensor extends Model
     {
         return [
             'modbus_address_temp' => 'integer',
-            'modbus_address_hum'  => 'integer',
+            'modbus_address_hum' => 'integer',
         ];
     }
 
@@ -36,5 +37,10 @@ class Sensor extends Model
     public function latestData(): HasOne
     {
         return $this->hasOne(SensorLatestData::class);
+    }
+
+    public function readings(): HasMany
+    {
+        return $this->hasMany(SensorReading::class);
     }
 }

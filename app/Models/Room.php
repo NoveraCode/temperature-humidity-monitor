@@ -22,8 +22,8 @@ class Room extends Model
     protected function casts(): array
     {
         return [
-            'temp_max_limit' => 'float',
-            'hum_max_limit'  => 'float',
+            'temp_max_limit' => 'decimal:2',
+            'hum_max_limit' => 'decimal:2',
         ];
     }
 

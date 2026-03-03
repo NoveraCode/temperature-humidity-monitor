@@ -21,8 +21,8 @@ class SensorLog extends Model
     protected function casts(): array
     {
         return [
-            'avg_temperature' => 'float',
-            'avg_humidity'    => 'float',
+            'avg_temperature' => 'decimal:2',
+            'avg_humidity' => 'decimal:2',
         ];
     }
 

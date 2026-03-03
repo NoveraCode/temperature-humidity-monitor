@@ -6,26 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SensorLatestData extends Model
+class SensorReading extends Model
 {
-    /** @use HasFactory<\Database\Factories\SensorLatestDataFactory> */
+    /** @use HasFactory<\Database\Factories\SensorReadingFactory> */
     use HasFactory;
+
+    /** Baris ini tidak pernah diubah setelah insert — nonaktifkan updated_at. */
+    public const UPDATED_AT = null;
 
     /** @var list<string> */
     protected $fillable = [
         'sensor_id',
-        'temperature',
-        'humidity',
-        'status',
-        'last_read_at',
+        'avg_temp',
+        'avg_hum',
+        'created_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'temperature' => 'decimal:2',
-            'humidity' => 'decimal:2',
-            'last_read_at' => 'datetime',
+            'avg_temp' => 'decimal:2',
+            'avg_hum' => 'decimal:2',
+            'created_at' => 'datetime',
         ];
     }
 
