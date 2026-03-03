@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
             $table->string('name');
-            $table->string('ip_address');
-            $table->integer('port')->default(502);
+            $table->string('ip_address', 45);
+            $table->unsignedSmallInteger('port')->default(502);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('hmi_id')->constrained('hmis')->cascadeOnDelete();
             $table->string('name');
-            $table->integer('modbus_address_temp');
-            $table->integer('modbus_address_hum');
+            $table->unsignedInteger('modbus_address_temp');
+            $table->unsignedInteger('modbus_address_hum');
             $table->timestamps();
         });
     }

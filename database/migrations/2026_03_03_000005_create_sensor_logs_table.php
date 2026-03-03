@@ -11,11 +11,11 @@ return new class extends Migration
         Schema::create('sensor_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
-            $table->float('avg_temperature');
-            $table->float('avg_humidity');
+            $table->decimal('avg_temperature', 5, 2);
+            $table->decimal('avg_humidity', 5, 2);
             $table->timestamps();
 
-            $table->index('created_at');
+            $table->index(['room_id', 'created_at'], 'idx_room_time');
         });
     }
 

@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('location')->nullable();
-            $table->float('temp_max_limit')->default(25.0);
-            $table->float('hum_max_limit')->default(60.0);
+            $table->decimal('temp_max_limit', 5, 2)->default(25.00);
+            $table->decimal('hum_max_limit', 5, 2)->default(60.00);
             $table->timestamps();
         });
     }
