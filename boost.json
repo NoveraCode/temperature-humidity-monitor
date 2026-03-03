@@ -2,7 +2,8 @@
     "agents": [
         "copilot"
     ],
-    "herd_mcp": false,
-    "mcp": true,
-    "sail": false
+    "guidelines": true,
+    "packages": [
+        "laravel/fortify"
+    ]
 }
