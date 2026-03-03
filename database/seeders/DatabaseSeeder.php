@@ -6,6 +6,7 @@ use App\Models\Hmi;
 use App\Models\Room;
 use App\Models\Sensor;
 use App\Models\SensorLatestData;
+use App\Models\SensorLog;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ─── Admin user ───────────────────────────────────────────────────────
+
         User::factory()->create([
             'name' => 'Admin SCADA',
             'email' => 'admin@scada.local',
@@ -54,7 +56,7 @@ class DatabaseSeeder extends Seeder
             $hmi = Hmi::factory()->create([
                 'room_id' => $room->id,
                 'name' => "HMI-0{$index}",
-                'ip_address' => '192.168.1.'.(10 + $index),
+                'ip_address' => '192.168.1.' . (10 + $index),
             ]);
 
             for ($i = 1; $i <= 5; $i++) {
@@ -74,6 +76,15 @@ class DatabaseSeeder extends Seeder
                     'CRITICAL' => $factory->critical()->create(['sensor_id' => $sensor->id]),
                     'OFFLINE' => $factory->offline()->create(['sensor_id' => $sensor->id]),
                 };
+            }
+
+            // ─── Chart history: 20 log points per room (1 minute apart) ──────
+            for ($m = 19; $m >= 0; $m--) {
+                SensorLog::factory()->create([
+                    'room_id' => $room->id,
+                    'created_at' => now()->subMinutes($m),
+                    'updated_at' => now()->subMinutes($m),
+                ]);
             }
         }
     }
