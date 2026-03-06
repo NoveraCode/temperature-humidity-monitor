@@ -4,7 +4,7 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-// Route::get('/', HomeController::class)->name('home');
+Route::redirect('/', '/dashboard')->name('home');
 
 Route::inertia('/welcome', 'welcome', [
     'canRegister' => Features::enabled(Features::registration()),
