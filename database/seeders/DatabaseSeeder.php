@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Topology: 6 rooms × 1 HMI × 5 sensors = 30 sensors total.
-     * Status distribution: 20 NORMAL · 5 WARNING · 3 CRITICAL · 2 OFFLINE
+     * Topology: 5 rooms × 1 HMI × 5 sensors = 25 sensors total (real hardware).
+     * Status distribution: 15 NORMAL · 5 WARNING · 3 CRITICAL · 2 OFFLINE
      */
     public function run(): void
     {
@@ -27,19 +27,21 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@scada.local',
         ]);
 
-        // ─── Room names & locations ───────────────────────────────────────────
+        // ─── Real hardware configuration ──────────────────────────────────────
+        // IP: 192.168.1.200-204 · Port: 502 (Modbus TCP)
+        // Function: Input Register (FC4) · Humidity=0 · Temperature=1
+        // Slave ID per sensor: 1-5 (unit_id)
         $rooms = [
-            ['name' => 'RUANG CCTV',   'location' => 'LT.2'],
-            ['name' => 'RUANG FIDS',   'location' => 'LT.1'],
-            ['name' => 'RUANG SERVER', 'location' => 'LT.3'],
-            ['name' => 'RUANG NETWORK', 'location' => 'LT.2'],
-            ['name' => 'RUANG UPS',    'location' => 'LT.1'],
-            ['name' => 'RUANG GENSET', 'location' => 'LT.B1'],
+            ['name' => 'RUANG 1', 'location' => null, 'ip' => '192.168.1.200'],
+            ['name' => 'RUANG 2', 'location' => null, 'ip' => '192.168.1.201'],
+            ['name' => 'RUANG 3', 'location' => null, 'ip' => '192.168.1.202'],
+            ['name' => 'RUANG 4', 'location' => null, 'ip' => '192.168.1.203'],
+            ['name' => 'RUANG 5', 'location' => null, 'ip' => '192.168.1.204'],
         ];
 
-        // Status pool: 20 NORMAL, 5 WARNING, 3 CRITICAL, 2 OFFLINE (total 30)
+        // Status pool: 15 NORMAL, 5 WARNING, 3 CRITICAL, 2 OFFLINE (total 25)
         $statusPool = array_merge(
-            array_fill(0, 20, 'NORMAL'),
+            array_fill(0, 15, 'NORMAL'),
             array_fill(0, 5, 'WARNING'),
             array_fill(0, 3, 'CRITICAL'),
             array_fill(0, 2, 'OFFLINE'),
@@ -56,15 +58,17 @@ class DatabaseSeeder extends Seeder
             $hmi = Hmi::factory()->create([
                 'room_id' => $room->id,
                 'name' => "HMI-0{$index}",
-                'ip_address' => '192.168.1.' . (10 + $index),
+                'ip_address' => $roomData['ip'],
+                'port' => 502,
             ]);
 
-            for ($i = 1; $i <= 5; $i++) {
+            for ($unitId = 1; $unitId <= 5; $unitId++) {
                 $sensor = Sensor::factory()->create([
                     'hmi_id' => $hmi->id,
-                    'name' => "{$roomData['name']} T/H {$i}",
-                    'modbus_address_temp' => ($index * 100) + (($i - 1) * 2) + 1,
-                    'modbus_address_hum' => ($index * 100) + (($i - 1) * 2) + 2,
+                    'name' => "{$roomData['name']} T/H {$unitId}",
+                    'modbus_address_hum' => 0,   // Input Register 0
+                    'modbus_address_temp' => 1,   // Input Register 1
+                    'unit_id' => $unitId,
                 ]);
 
                 $status = $statusPool[$statusIndex++];

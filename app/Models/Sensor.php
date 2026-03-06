@@ -19,6 +19,7 @@ class Sensor extends Model
         'name',
         'modbus_address_temp',
         'modbus_address_hum',
+        'unit_id',
     ];
 
     protected function casts(): array
@@ -26,6 +27,7 @@ class Sensor extends Model
         return [
             'modbus_address_temp' => 'integer',
             'modbus_address_hum' => 'integer',
+            'unit_id' => 'integer',
         ];
     }
 

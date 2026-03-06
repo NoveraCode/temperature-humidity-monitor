@@ -30,7 +30,7 @@ test('hmis table has correct columns', function () {
 test('sensors table has correct columns', function () {
     expect(Schema::hasTable('sensors'))->toBeTrue();
 
-    foreach (['id', 'hmi_id', 'name', 'modbus_address_temp', 'modbus_address_hum', 'created_at', 'updated_at'] as $column) {
+    foreach (['id', 'hmi_id', 'name', 'modbus_address_temp', 'modbus_address_hum', 'unit_id', 'created_at', 'updated_at'] as $column) {
         expect(Schema::hasColumn('sensors', $column))
             ->toBeTrue("sensors.{$column} column is missing");
     }
@@ -50,7 +50,7 @@ test('sensor_latest_data table has correct columns', function () {
 test('sensor_latest_data enforces unique sensor_id', function () {
     DB::table('rooms')->insert(['id' => 1, 'name' => 'R1', 'temp_max_limit' => 25.00, 'hum_max_limit' => 60.00]);
     DB::table('hmis')->insert(['id' => 1, 'room_id' => 1, 'name' => 'HMI-1', 'ip_address' => '192.168.1.1', 'port' => 502, 'is_active' => 1]);
-    DB::table('sensors')->insert(['id' => 1, 'hmi_id' => 1, 'name' => 'S1', 'modbus_address_temp' => 1, 'modbus_address_hum' => 2]);
+    DB::table('sensors')->insert(['id' => 1, 'hmi_id' => 1, 'name' => 'S1', 'modbus_address_temp' => 1, 'modbus_address_hum' => 0, 'unit_id' => 1]);
 
     DB::table('sensor_latest_data')->insert(['sensor_id' => 1, 'status' => 'OFFLINE']);
 
@@ -89,7 +89,7 @@ test('sensor_readings has no updated_at column', function () {
 test('deleting a room cascades to hmis and sensors', function () {
     DB::table('rooms')->insert(['id' => 1, 'name' => 'R1', 'temp_max_limit' => 25.00, 'hum_max_limit' => 60.00]);
     DB::table('hmis')->insert(['id' => 1, 'room_id' => 1, 'name' => 'HMI-1', 'ip_address' => '192.168.1.1', 'port' => 502, 'is_active' => 1]);
-    DB::table('sensors')->insert(['id' => 1, 'hmi_id' => 1, 'name' => 'S1', 'modbus_address_temp' => 1, 'modbus_address_hum' => 2]);
+    DB::table('sensors')->insert(['id' => 1, 'hmi_id' => 1, 'name' => 'S1', 'modbus_address_temp' => 1, 'modbus_address_hum' => 0, 'unit_id' => 1]);
     DB::table('sensor_latest_data')->insert(['sensor_id' => 1, 'status' => 'OFFLINE']);
 
     DB::table('rooms')->where('id', 1)->delete();
