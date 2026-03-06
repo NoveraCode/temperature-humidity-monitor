@@ -1,6 +1,6 @@
 # Backend Implementation Plan — SCADA Monitoring Dashboard
 
-**Terakhir diperbarui:** 2 Maret 2026  
+**Terakhir diperbarui:** 6 Maret 2026  
 **Target Environment:** Mini PC Intel Celeron J1900 · MySQL · Laravel · Python `pymodbus` · PM2
 
 ---
@@ -10,7 +10,11 @@
 | Parameter | Keputusan |
 |---|---|
 | Database | MySQL / InnoDB |
-| Jumlah Sensor | 30 sensor / 6 HMI |
+| Jumlah Sensor | 25 sensor / 5 HMI |
+| HMI IP Range | 192.168.1.200 – 192.168.1.204 · port 502 |
+| Modbus Function Code | **FC4** (Input Register) |
+| Register Mapping | Humidity = reg 0 · Temperature = reg 1 · Skala ÷10 |
+| Slave ID per Sensor | `unit_id` 1–5 (kolom di tabel `sensors`) |
 | Interval Polling | 5 detik |
 | Chart History per-Room | Agregasi rata-rata per 15 menit |
 | Chart History per-Sensor | Agregasi rata-rata per **5 menit** |
@@ -477,31 +481,33 @@ pm2 startup
 
 ## 7. Checklist Implementasi
 
-### Fase 1 — Database
-- [ ] Buat migration: `rooms`, `hmis`, `sensors`
-- [ ] Buat migration: `sensor_latest_data` (dengan UNIQUE + index)
-- [ ] Buat migration: `sensor_logs` (dengan composite index)
-- [ ] Buat migration: `sensor_readings` (dengan composite index)
-- [ ] Jalankan `php artisan migrate`
+### Fase 1 — Database ✅
+- [x] Buat migration: `rooms`, `hmis`, `sensors`
+- [x] Buat migration: `sensor_latest_data` (dengan UNIQUE + index)
+- [x] Buat migration: `sensor_logs` (dengan composite index)
+- [x] Buat migration: `sensor_readings` (dengan composite index)
+- [x] Tambah kolom `unit_id` (Modbus Slave ID) ke tabel `sensors`
+- [x] Jalankan `php artisan migrate`
 
-### Fase 2 — Models & Relationships
-- [ ] Buat model `Room`, `Hmi`, `Sensor`, `SensorLatestData`, `SensorLog`, `SensorReading`
-- [ ] Definisikan semua relasi Eloquent
-- [ ] Buat factory + seeder untuk testing lokal
+### Fase 2 — Models & Relationships ✅
+- [x] Buat model `Room`, `Hmi`, `Sensor`, `SensorLatestData`, `SensorLog`, `SensorReading`
+- [x] Definisikan semua relasi Eloquent
+- [x] Buat factory + seeder untuk testing lokal (5 ruangan, IP 192.168.1.200–204, unit_id 1–5)
 
-### Fase 3 — Dashboard Backend
-- [ ] Buat `DashboardController` dengan eager loading + kolom minimal
-- [ ] Update `routes/web.php` agar `/dashboard` pakai controller
-- [ ] Verifikasi payload sesuai `API-SHAPE.md`
+### Fase 3 — Dashboard Backend ✅
+- [x] Buat `DashboardController` dengan eager loading + kolom minimal
+- [x] Update `routes/web.php` agar `/dashboard` pakai controller
+- [x] Verifikasi payload sesuai `API-SHAPE.md`
 
-### Fase 4 — Scheduler
-- [ ] Tambah 3 scheduled task di `routes/console.php`
-- [ ] Test manual: `php artisan schedule:run`
+### Fase 4 — Scheduler ✅
+- [x] Tambah 3 scheduled task di `routes/console.php`
+- [x] Test manual: `php artisan schedule:run`
 
-### Fase 5 — Python Poller
-- [ ] Implementasi `poller.py` dengan single DB connection
-- [ ] Implementasi UPSERT bulk untuk data normal
-- [ ] Implementasi bulk OFFLINE via JOIN saat timeout
+### Fase 5 — Python Poller ✅
+- [x] Implementasi `poller.py` dengan single DB connection
+- [x] Implementasi UPSERT bulk untuk data normal
+- [x] Implementasi bulk OFFLINE via JOIN saat timeout
+- [x] Gunakan Function Code 4 (Input Register) dengan `unit_id` sebagai Slave ID
 - [ ] Test simulasi: cabut kabel / matikan 1 HMI → status berubah ke OFFLINE
 
 ### Fase 6 — Security & Hardening
