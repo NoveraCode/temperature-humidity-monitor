@@ -1,19 +1,16 @@
 <?php
 
-test('registration screen can be rendered', function () {
-    $response = $this->get(route('register'));
-
-    $response->assertOk();
+test('registration screen is disabled', function () {
+    $this->get('/register')->assertNotFound();
 });
 
-test('new users can register', function () {
-    $response = $this->post(route('register.store'), [
+test('new users cannot self-register', function () {
+    $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ]);
+    ])->assertNotFound();
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertGuest();
 });

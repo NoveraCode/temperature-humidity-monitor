@@ -144,7 +144,7 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Features::registration(), // Ditutup — LAN panel, akun dibuat admin
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
