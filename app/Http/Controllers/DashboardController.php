@@ -18,6 +18,17 @@ class DashboardController extends Controller
             ->select(['id', 'name', 'location', 'temp_max_limit', 'hum_max_limit'])
             ->get();
 
+        $chartlogs = \App\Models\SensorLog::query()
+            ->whereIn('room_id', $rooms->pluck('id'))
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('room_id')
+            ->map(fn ($logs) => $logs->take(20)->reverse()->map(fn ($log) => [
+                'time' => $log->created_at->format('H:i'),
+                'avg_temperature' => round((float) $log->avg_temperature, 1),
+                'avg_humidity' => round((float) $log->avg_humidity, 1),
+            ])->values()->all());
+
         $payload = $rooms->map(function (Room $room) {
             $sensors = $room->hmis->flatMap->sensors;
             $online = $sensors->filter(fn ($s) => $s->latestData?->status !== 'OFFLINE');
@@ -26,6 +37,8 @@ class DashboardController extends Controller
                 'id' => $room->id,
                 'name' => $room->name,
                 'location' => $room->location,
+                'temp_max_limit' => $room->temp_max_limit,
+                'hum_max_limit' => $room->hum_max_limit,
                 'room_avg_temp' => $online->isNotEmpty()
                     ? round((float) $online->avg(fn ($s) => $s->latestData->temperature), 1)
                     : null,
@@ -33,6 +46,7 @@ class DashboardController extends Controller
                     ? round((float) $online->avg(fn ($s) => $s->latestData->humidity), 1)
                     : null,
                 'status' => $this->resolveRoomStatus($sensors),
+                'last_update' => $online->max(fn ($s) => $s->latestData?->last_read_at)?->format('Y-m-d H:i:s'),
                 'sensors' => $sensors->map(fn ($s) => [
                     'id' => $s->id,
                     'name' => $s->name,
@@ -43,6 +57,7 @@ class DashboardController extends Controller
                         ? (float) $s->latestData->humidity
                         : null,
                     'status' => $s->latestData?->status ?? 'OFFLINE',
+                    'last_read_at' => $s->latestData?->last_read_at?->format('Y-m-d H:i:s'),
                 ])->values()->all(),
             ];
         });
@@ -68,6 +83,7 @@ class DashboardController extends Controller
                 'last_update' => now()->toDateTimeString(),
             ],
             'rooms' => $payload->values()->all(),
+            'chartLogs' => $chartlogs,
         ]);
     }
 
