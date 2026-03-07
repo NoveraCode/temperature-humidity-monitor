@@ -1,6 +1,6 @@
 # Backend Implementation Plan — SCADA Monitoring Dashboard
 
-**Terakhir diperbarui:** 6 Maret 2026  
+**Terakhir diperbarui:** 7 Maret 2026  
 **Target Environment:** Mini PC Intel Celeron J1900 · MySQL · Laravel · Python `pymodbus` · PM2
 
 ---
@@ -510,12 +510,12 @@ pm2 startup
 - [x] Gunakan Function Code 4 (Input Register) dengan `unit_id` sebagai Slave ID
 - [ ] Test simulasi: cabut kabel / matikan 1 HMI → status berubah ke OFFLINE
 
-### Fase 6 — Security & Hardening
-- [ ] Matikan self-registration di `config/fortify.php`
-- [ ] Matikan SSR di `config/inertia.php`
-- [ ] Buat DB user `poller` dengan hak minimal
-- [ ] Terapkan MySQL optimization di `my.ini`
-- [ ] Setup PM2 + `pm2 startup`
+### Fase 6 — Security & Hardening ⚙️ (sebagian selesai)
+- [x] Matikan self-registration di `config/fortify.php`
+- [x] Matikan SSR di `config/inertia.php`
+- [ ] **[MANUAL — di server]** Buat DB user `poller` dengan hak minimal (lihat §6 SQL di atas)
+- [ ] **[MANUAL — di server]** Terapkan MySQL optimization di `my.ini` (lihat §6 my.ini di atas)
+- [ ] **[MANUAL — di server]** Setup PM2 + `pm2 startup` (lihat §6 PM2 process list di atas)
 
 ---
 
